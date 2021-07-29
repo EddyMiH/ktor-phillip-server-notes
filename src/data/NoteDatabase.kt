@@ -2,6 +2,7 @@ package com.androiddev.data
 
 import com.androiddev.data.collections.Note
 import com.androiddev.data.collections.User
+import com.androiddev.security.checkPasswordHash
 import org.litote.kmongo.contains
 import org.litote.kmongo.coroutine.CoroutineClient
 import org.litote.kmongo.coroutine.CoroutineDatabase
@@ -28,7 +29,7 @@ suspend fun checkIfUserExists(email: String): Boolean = users.findOne(User::emai
 
 suspend fun checkPasswordForEmail(email: String, password: String): Boolean {
     val actualPassword = users.findOne(User::email eq email)?.password ?: return false
-    return actualPassword == password
+    return checkPasswordHash(password, actualPassword)
 }
 
 suspend fun getUserNotes(email: String): List<Note> =

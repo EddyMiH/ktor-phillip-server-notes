@@ -4,6 +4,7 @@ import com.androiddev.data.checkIfUserExists
 import com.androiddev.data.collections.User
 import com.androiddev.data.request.RegisterRequest
 import com.androiddev.data.response.SimpleResponse
+import com.androiddev.security.getHashWithSalt
 import io.ktor.application.*
 import io.ktor.features.ContentTransformationException
 import io.ktor.http.*
@@ -25,7 +26,7 @@ fun Route.registerUser() {
                     com.androiddev.data.registerUser(
                         User(
                             email = request.email,
-                            password = request.password
+                            password = getHashWithSalt(request.password)
                         )
                     )
                 ) {
