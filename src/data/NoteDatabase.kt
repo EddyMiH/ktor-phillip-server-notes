@@ -32,6 +32,18 @@ suspend fun checkPasswordForEmail(email: String, password: String): Boolean {
     return checkPasswordHash(password, actualPassword)
 }
 
+suspend fun checkPasswordAndEmail(email: String, password: String): User? {
+    val user = users.findOne(User::email eq email)
+    return user?.let {
+        val actualPassword = it.password
+        return@let if (checkPasswordHash(password, actualPassword)) {
+            it
+        } else {
+            null
+        }
+    }
+}
+
 suspend fun getUserNotes(email: String): List<Note> =
     notes.find(Note::owners contains email).toList()
 
