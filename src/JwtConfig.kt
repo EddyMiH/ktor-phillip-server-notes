@@ -9,14 +9,13 @@ import java.util.*
 
 object JwtConfig {
 
-    private const val secret: String = "eddy-secret"
+    private const val secret: String = "eddysecret"
     private const val issuer: String = "http://0.0.0.0:8001"
-    private const val audience: String = "http://0.0.0.0:8001/"
+    private const val audience: String = "http://0.0.0.0:8001"
     private const val validityInMs = 36_000_00 * 6 // 1 hour
-    private val algorithm = Algorithm.HMAC256(secret)
 
     val verifier: JWTVerifier = JWT
-        .require(algorithm)
+        .require(Algorithm.HMAC256(secret))
         .withAudience(audience)
         .withIssuer(issuer)
         .build()
@@ -24,9 +23,10 @@ object JwtConfig {
     fun createToken(user: User): String = JWT.create()
         .withSubject("Authentication")
         .withIssuer(issuer)
+        .withAudience(audience)
         .withClaim("email", user.email)
         .withClaim("password", user.password)
         .withClaim("id", user.id)
         .withExpiresAt(Date(System.currentTimeMillis() + validityInMs))
-        .sign(algorithm)
+        .sign(Algorithm.HMAC256(secret))
 }

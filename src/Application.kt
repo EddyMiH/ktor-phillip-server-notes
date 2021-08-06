@@ -1,5 +1,6 @@
 package com.androiddev
 
+import com.androiddev.data.checkPassword
 import com.androiddev.data.checkPasswordForEmail
 import com.androiddev.data.collections.User
 import com.androiddev.data.registerUser
@@ -43,7 +44,7 @@ fun Application.module(testing: Boolean = false) {
     install(Routing) {
         registerUser()
         loginUser()
-        getNotesList()
+        //getNotesList()
     }
 }
 
@@ -60,28 +61,13 @@ private fun Authentication.Configuration.configureAuthentication() = basic {
     }
 }
 
-private fun Authentication.Configuration.configureJWTAuthentication() = jwt {
+private fun Authentication.Configuration.configureJWTAuthentication() = jwt("auth-jwt") {
     realm = "Note Server 2"
     verifier(JwtConfig.verifier)
-    challenge { defaultScheme, realm ->
-        val errorMessage = call.request.headers["Authorization"]
-        try {
-            //val jwt = errorMessage?.replace("Bearer ", "")
-            JwtConfig.verifier.verify(errorMessage)
-            ""
-        } catch (e: Exception) {
-            when (e) {
-                is JWTVerificationException ->
-                    if (e.localizedMessage.contains("expired")) "Token expired" else "Invalid token"
-                else -> "Unknown token error"
-            }
-        }
-        println("here")
-    }
     validate { jwtCredential ->
         val email = jwtCredential.payload.getClaim("email").asString()
         val password = jwtCredential.payload.getClaim("password").asString()
-        if (checkPasswordForEmail(email, password)) {
+        if (checkPassword(email, password)) {
             JWTPrincipal(jwtCredential.payload)
         } else {
             null

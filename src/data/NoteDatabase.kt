@@ -32,6 +32,11 @@ suspend fun checkPasswordForEmail(email: String, password: String): Boolean {
     return checkPasswordHash(password, actualPassword)
 }
 
+suspend fun checkPassword(email: String, password: String): Boolean {
+    val actualPassword = users.findOne(User::email eq email)?.password ?: return false
+    return password == actualPassword
+}
+
 suspend fun checkPasswordAndEmail(email: String, password: String): User? {
     val user = users.findOne(User::email eq email)
     return user?.let {

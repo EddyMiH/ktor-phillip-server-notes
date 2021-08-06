@@ -51,13 +51,13 @@ fun Route.loginUser() {
     }
 
     route("/auth/getUser") {
-        authenticate {
+        authenticate("auth-jwt") {
             get {
                 val principal = call.principal<JWTPrincipal>()
                 requireNotNull(principal)
-                val email = principal.payload.getClaim("email").asString()
-                val pass = principal.payload.getClaim("password").asString()
-                val id = principal.payload.getClaim("id").asString()
+                val email = principal.payload.getClaim("email").toString()
+                val pass = principal.payload.getClaim("password").toString()
+                val id = principal.payload.getClaim("id").toString()
                 val expiresAt = principal.payload.expiresAt?.time?.minus(System.currentTimeMillis())
                 call.respond(HttpStatusCode.OK, SimpleResponse(true, """User data :
                     | email: $email, 
